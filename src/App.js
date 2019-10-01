@@ -4,16 +4,14 @@ import MovieRow from './MovieRow.js'
 import $ from 'jquery'
 
 class App extends React.Component {
-  
+
   constructor(props) {
     super(props)
     this.state = {}
-
-    this.performSearch()
   }
 
-  performSearch() {
-    const urlString = "https://api.themoviedb.org/3/search/movie?api_key=e23be4d2eb659841da6942b234b925a2&query=marvel"
+  performSearch(searchTerm) {
+    const urlString = `https://api.themoviedb.org/3/search/movie?api_key=e23be4d2eb659841da6942b234b925a2&query=${searchTerm}`
 
     $.ajax({
       url: urlString,
@@ -21,17 +19,23 @@ class App extends React.Component {
         const results = searchResults.results
         var movieRows = []
         results.forEach(movie => {
-          const movieRow = <MovieRow key={movie.id} movie={movie}/>
+          const movieRow = <MovieRow key={movie.id} movie={movie} />
           movieRows.push(movieRow)
-          console.log(movie.title) 
+          console.log(movie.title)
         })
 
-        this.setState({rows: movieRows})
+        this.setState({ rows: movieRows })
       }),
       error: (xhr, status, err) => {
-          console.log('Failed to fetch data', err)
+        console.log('Failed to fetch data', err)
       }
     })
+  }
+
+  searchChangedHandler(event) {
+    console.log(event.target.value)
+    const searchTerm = event.target.value
+    this.performSearch(searchTerm)
   }
 
   render() {
@@ -59,7 +63,7 @@ class App extends React.Component {
           width: "100%",
           padding: 8,
           paddingLeft: 16
-        }} placeholder="Enter search term"></input>
+        }} onChange={this.searchChangedHandler.bind(this)} placeholder="Enter search term"></input>
 
         {this.state.rows}
 
